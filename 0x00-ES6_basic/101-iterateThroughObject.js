@@ -1,9 +1,9 @@
-// function that iterates through objects. the fnction's parameter is the return value from the previous function
+// function to iterates through objects.
 
 export default function iterateThroughObject(reportWithIterator) {
   // hope it works
-  let result = [];
-  for (let item of reportWithIterator) {
+  const result = [];
+  for (const item of reportWithIterator) {
     result.push(item);
   }
   return result;
