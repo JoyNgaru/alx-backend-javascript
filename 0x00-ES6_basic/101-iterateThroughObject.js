@@ -1,9 +1,10 @@
+// function that iterates through objects. the fnction's parameter is the return value from the previous function
+
 export default function iterateThroughObject(reportWithIterator) {
-  let n = reportWithIterator.next();
-  let res = '';
-  while (!n.done) {
-    res += `${n.value} | `;
-    n = reportWithIterator.next();
+  // hope it works
+  let result = [];
+  for (let item of reportWithIterator) {
+    result.push(item);
   }
-  return res.slice(0, res.length - 3);
+  return result;
 }
