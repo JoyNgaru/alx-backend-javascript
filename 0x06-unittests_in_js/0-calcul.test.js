@@ -1,9 +1,7 @@
-// tests for a function that rounds two numbers and returns the sum of the rounded numbers
-
 const assert = require('assert');
 const mocha = require('mocha');
 
-const calculateNumber = require('./0-calcul.js');
+const calculateNumber = require('./0-calcul');
 
 describe('calculateNumber', () => {
   it('should return sum of integers', () => {
@@ -12,27 +10,33 @@ describe('calculateNumber', () => {
     assert.strictEqual(calculateNumber(1, -3), -2);
   });
 
-  it('should round a', () => {
-    assert.strictEqual(calculateNumber(1.3, 0), 1);
-    assert.strictEqual(calculateNumber(1.7, 0), 2);
-    assert.strictEqual(calculateNumber(1.5, 0), 2);
-    assert.strictEqual(calculateNumber(1.4, 0), 1);
-    assert.strictEqual(calculateNumber(1.6, 0), 2);
+  it('should round floats', () => {
+    assert.strictEqual(calculateNumber(1, 3.7), 5);
+    assert.strictEqual(calculateNumber(1.2, 3.7), 5);
+    assert.strictEqual(calculateNumber(1.5, 3.7), 6);
+    assert.strictEqual(calculateNumber(0.1, 0), 0);
+    assert.strictEqual(calculateNumber(1.4, -4.5), -3);
   });
 
-  it('should round b', () => {
-    assert.strictEqual(calculateNumber(0, 1.3), 1);
-    assert.strictEqual(calculateNumber(0, 1.7), 2);
-    assert.strictEqual(calculateNumber(0, 1.5), 2);
-    assert.strictEqual(calculateNumber(0, 1.4), 1);
-    assert.strictEqual(calculateNumber(0, 1.6), 2);
+  it('should return the rounded number if only one is provided', () => {
+    assert.strictEqual(calculateNumber(2), 2);
+    assert.strictEqual(calculateNumber(2.7), 3);
   });
 
-  it('should round a and b', () => {
-    assert.strictEqual(calculateNumber(1.3, 1.3), 2);
-    assert.strictEqual(calculateNumber(1.7, 1.7), 4);
-    assert.strictEqual(calculateNumber(1.5, 1.5), 4);
-    assert.strictEqual(calculateNumber(1.4, 1.4), 2);
-    assert.strictEqual(calculateNumber(1.6, 1.6), 4);
+  it('should cast non-numbers into numbers', () => {
+    assert.strictEqual(calculateNumber(true, '3'), 4);
+    assert.strictEqual(calculateNumber(1, '3.7'), 5);
+    assert.strictEqual(calculateNumber('1.2', 3.7), 5);
   });
+
+  it('should throw typeerror if either param cannot be coerced to a number', () => {
+    assert.throws(() => calculateNumber('hello'), {
+      name: 'TypeError',
+      message: 'Parameters must be numbers'
+    });
+    assert.throws(() => calculateNumber(1.2, 'dog'), {
+      name: 'TypeError',
+      message: 'Parameters must be numbers'
+    });
   });
+});
