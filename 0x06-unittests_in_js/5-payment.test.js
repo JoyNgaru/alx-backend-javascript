@@ -1,31 +1,24 @@
-const chai = require('chai');
-const expect = chai.expect;
-
 const sinon = require('sinon');
-const sendPaymentRequestToApi = require('./5-payment');
+const sendPaymentRequestToApi = require('./5-payment.js');
 
-describe('sendPaymentRequestToApi', () => {
-  let consolespy;
+describe('sendPaymentRequestToApi', function () {
+  let SSpy;
 
-  beforeEach(() => {
-    consolespy = sinon.spy(console, 'log');
-  });
-  afterEach(() => {
-    consolespy.restore();
+  beforeEach(function () {
+    SSpy = sinon.spy(console, 'log');
   });
 
-  it('test the send Pyament Request with 100, 20', () => {
+  afterEach(function () {
+    SSpy.restore();
+  });
+
+  it('should log "The total is: 120" for inputs 100 and 20', function () {
     sendPaymentRequestToApi(100, 20);
-
-    expect(consolespy.calledWithExactly('The total is: 120')).to.be.true;
-    expect(consolespy.CalledOnce);
+    sinon.assert.calledOnceWithExactly(SSpy, 'The total is: 120');
   });
 
-  it('test the send Pyament Request with 10, 10', () => {
+  it('should log "The total is: 20" for inputs 10 and 10', function () {
     sendPaymentRequestToApi(10, 10);
-
-    expect(consolespy.calledOnceWithExactly('The total is: 20')).to.be.true;
-    expect(consolespy.CalledOnce);
+    sinon.assert.calledOnceWithExactly(SSpy, 'The total is: 20');
   });
-
 });

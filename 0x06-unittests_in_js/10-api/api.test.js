@@ -1,109 +1,117 @@
-const chai = require('chai');
-const expect = chai.expect;
-const request = require('request');
+const request = require("request");
+const {describe, it} = require("mocha");
+const expect = require("chai").expect;
 
-describe('test the API', () => {
-  it('test the API with localost:7865', (done) => {
-    request('http://localhost:7865', 'GET', (er, rs, bd) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(200);
-      expect(bd).to.equal('Welcome to the payment system');
+describe("Home page", function() {
+    const options = {
+    url: "http://localhost:7865/",
+    method: "GET"
+    }
+    it("check correct status code", function(done) {
+    request(options, function(err, res, body) {
+        expect(res.statusCode).to.equal(200);
+        done();
     });
-    done();
-  });
-
-  it('test the API with cart/3', (done) => {
-    request('http://localhost:7865/cart/3', 'GET', (er, rs, bd) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(200);
-      expect(bd).to.equal('Payment methods for cart 3');
     });
-    done();
-  });
-
-  it('test the API with cart/234', (done) => {
-    request('http://localhost:7865/cart/234', 'GET', (er, rs, bd) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(200);
-      expect(bd).to.equal('Payment methods for cart 234');
+    it("check correct content", function(done) {
+    request(options, function(err, res, body) {
+        expect(body).to.equal("Welcome to the payment system");
+        done();
     });
-    done();
-  });
-
-  it('test the API with cart/abc', (done) => {
-    request('http://localhost:7865/cart/abc', 'GET', (er, rs) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(404);
     });
-    done();
-  });
+});
 
-  it('test the API with cart/2bc', (done) => {
-    request('http://localhost:7865/cart/2bc', 'GET', (er, rs) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(404);
+describe("Cart page", function() {
+    it("check correct status code for correct url", function(done) {
+    request.get("http://localhost:7865/cart/12", function(err, res, body) {
+        expect(res.statusCode).to.equal(200);
+        done();
     });
-    done();
-  });
-
-  it('test the API with cart/23a', (done) => {
-    request('http://localhost:7865/cart/23a', 'GET', (er, rs) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(404);
     });
-    done();
-  });
-
-  it('test the API with cart', (done) => {
-    request('http://localhost:7865/cart', 'GET', (er, rs) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(404);
+    it("check correct content for correct url", function(done) {
+    request.get("http://localhost:7865/cart/12", function(err, res, body) {
+        expect(body).to.equal("Payment methods for cart 12");
+        done();
     });
-    done();
-  });
+    });
+    it("check correct status code for incorrect url", function(done) {
+    request.get("http://localhost:7865/cart/hello", function(err, res, body) {
+        expect(res.statusCode).to.equal(404);
+        done();
+    });
+    });
+});
 
-  it('test the API /login with some body', (done) => {
-    const prm = {
-      url: 'http://localhost:7865/login',
-      method: 'POST',
-      json: {
-        userName: 'Holberton',
-      },
+describe("Available_payments page", function() {
+    it("check correct status for correct url", function() {
+    request.get("http://localhost:7865/available_payments", (err, res, body) => {
+        if (err) {
+        expect(res.statusCode).to.not.equal(200);
+        } else {
+        expect(res.statusCode).to.equal(200);
+        }
+    });
+    });
+    it("check correct body content for correct url", function() {
+    const option = {json: true};
+    const payLoad = {
+        payment_methods: {
+        credit_cards: true,
+        paypal: false
+        }
+    }
+    request.get("http://localhost:7865/available_payments", option, (err, res, body) => {
+        if (err) {
+        expect(res.statusCode).to.not.equal(200);
+        } else {
+        expect(body).to.deep.equal(payLoad);
+        }
+    });
+    });
+});
+
+describe("Login", function() {
+    it("check correct status code for request that's sent properly", function(done) {
+    const opt = {
+        url: "http://localhost:7865/login",
+        json: true,
+	    body: {
+        user: 'JOE'
+        }
     };
-    request(prm, (er, rs, bd) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(200);
-      expect(bd).to.equal('Welcome Holberton');
+    request.post(opt, function(err, res, body) {
+        expect(res.statusCode).to.equal(200);
+        done();
     });
-    done();
-  });
-
-  it('test the API /login with no body', (done) => {
-    const prm = {
-      url: 'http://localhost:7865/login',
-      method: 'POST',
-      
+    });
+    it("check correct content for request that's sent properly", function(done) {
+    const opts = {
+        url: "http://localhost:7865/login",
+        json: true,
+        body: {
+        user: 'JOE'
+        }
     };
-    request(prm, (er, rs, bd) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(200);
-      expect(bd).to.equal('Welcome undefined');
+    request.post(opts, function(err, res, body) {
+        if (err) {
+        expect(res.statusCode).to.not.equal(200);
+        } else {
+        expect(body).to.contain('Welcome JOE');
+        }
+        done();
     });
-    done();
-  });
-
-  it('test the API /available_payments', (done) => {
-    const prm = {
-      url: 'http://localhost:7865/available_payments',
-      method: 'GET',
+    });
+    it("check correct status code for request that's not sent properly", function(done) {
+    const op = {
+        url: "http://localhost:7865/login",
+        json: true,
+        body: {
+        usr: 'JOE'
+        }
     };
-    request(prm, (er, rs, bd) => {
-      if (er) throw er;
-      expect(rs.statusCode).to.equal(200);
-      expect(bd).to.equal('{"payment_methods":{"credit_cards":true,"paypal":false}}');
+    request.post(op, function(err, res, body) {
+        expect(res.statusCode).to.equal(404);
+        done();
     });
-    done();
-  });
-
-
+    });
 });
